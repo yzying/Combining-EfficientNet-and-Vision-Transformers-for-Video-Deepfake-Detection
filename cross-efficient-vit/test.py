@@ -172,9 +172,9 @@ if __name__ == "__main__":
                         help="Which configuration to use. See into 'config' folder.")
     parser.add_argument('--efficient_net', type=int, default=0, 
                         help="Which EfficientNet version to use (0 or 7, default: 0)")
-    parser.add_argument('--frames_per_video', type=int, default=30, 
+    parser.add_argument('--frames_per_video', type=int, default=10, 
                         help="How many equidistant frames for each video (default: 30)")
-    parser.add_argument('--batch_size', type=int, default=32, 
+    parser.add_argument('--batch_size', type=int, default=1, 
                         help="Batch size (default: 32)")
     
     opt = parser.parse_args()
@@ -221,8 +221,13 @@ if __name__ == "__main__":
         folders = [opt.dataset]
 
     # Read all videos paths
+    print(folders)
+# TEST_DIR = "../../deep_fakes/dataset/test_set"
+# /root/deep_fakes/dataset/test_set
+
     for folder in folders:
         method_folder = os.path.join(TEST_DIR, folder)  
+        print(method_folder)
         for index, video_folder in enumerate(os.listdir(method_folder)):
             paths.append(os.path.join(method_folder, video_folder))
 

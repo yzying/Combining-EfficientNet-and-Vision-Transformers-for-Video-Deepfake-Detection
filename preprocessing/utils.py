@@ -3,20 +3,31 @@ import os
 from glob import glob
 from pathlib import Path
 import cv2
-banned_folders = ["boxes", "set", "splits", "actors", "crops", "DeepFakeDetection", "actors", "zip"]
-def get_video_paths(data_path, dataset, excluded_videos=[]):
+#banned_folders = ["boxes", "set", "splits", "actors", "crops", "DeepFakeDetection", "actors", "zip"]
+banned_folders = ["boxes", "set", "splits", "actors", "crops", "youtube", "actors", "zip"]
+def get_video_paths(data_path, dataset, excluded_videos=[], one_div_down=False):
     videos_folders = os.listdir(data_path)
     videos_paths = []
     for folder in videos_folders:
+        print('start')
+        print(folder)
         if any(banned_folder in folder for banned_folder in banned_folders):
             continue
+        print(folder)
         
         folder_path = os.path.join(data_path, folder)
         if dataset == 1:
             internal_folders = os.listdir(folder_path)
+            print(internal_folders)
+            print(folder_path)
             for internal_folder in internal_folders:
                 internal_path = os.path.join(folder_path, internal_folder)
-                internal_path = os.path.join(internal_path, "c23", "videos")
+                if one_div_down is True:
+                    internal_path = os.path.join(internal_path, "videos")
+                else:
+                    internal_path = os.path.join(internal_path, "c23", "videos")
+                print(internal_path)
+                print('==')
                 videos_paths.extend([os.path.join(internal_path, video_name) for video_name in os.listdir(internal_path)])
             
         else:
@@ -57,6 +68,7 @@ def get_original_video_paths(root_dir, basename=False):
 
         
 def get_method_from_name(video):
+    #methods = ["youtube", "Deepfakes", "Face2Face", "FaceShifter", "FaceSwap", "NeuralTextures"]
     methods = ["youtube", "Deepfakes", "Face2Face", "FaceShifter", "FaceSwap", "NeuralTextures"]
     for method in methods:
         if method in video:

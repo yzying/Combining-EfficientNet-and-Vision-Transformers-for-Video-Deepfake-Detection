@@ -53,11 +53,13 @@ class VideoDataset(Dataset):
         self.videos = videos
 
     def __getitem__(self, index: int):
+        print(index)
         video = self.videos[index]
         capture = cv2.VideoCapture(video)
         frames_num = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
     
         frames = OrderedDict()
+        print(frames_num)
         for i in range(frames_num):
             capture.grab()
             success, frame = capture.retrieve()
@@ -68,6 +70,8 @@ class VideoDataset(Dataset):
             frame = frame.resize(size=[s // 2 for s in frame.size])
             frames[i] = frame
         return video, list(frames.keys()), list(frames.values())
+        #capture.release()
+        return ret
 
     def __len__(self) -> int:
         return len(self.videos)

@@ -15,15 +15,29 @@ import argparse
 
 
 def process_videos(videos, detector_cls: Type[VideoFaceDetector], selected_dataset, opt):
+
+    print('start -1 ')
+
     detector = face_detector.__dict__[detector_cls](device="cuda:0")
 
     dataset = VideoDataset(videos)
     
-    loader = DataLoader(dataset, shuffle=False, num_workers=opt.processes, batch_size=1, collate_fn=lambda x: x)
+    #loader = DataLoader(dataset, shuffle=False, num_workers=opt.processes, batch_size=1, collate_fn=lambda x: x)
+    print('!!!')
+    print(opt.processes)
+    loader = DataLoader(dataset, shuffle=False, num_workers=0, batch_size=1, collate_fn=lambda x: x)
     missed_videos = []
+#    for item in loader:
+#        print(item[0][0])
+    #for item in tqdm(loader):
+    #    print(item[0][0])
+    #raise
     for item in tqdm(loader): 
+        print('-start-')
         result = {}
         video, indices, frames = item[0]
+        id = os.path.splitext(os.path.basename(video))[0]
+        print(id)
         if selected_dataset == 1:
             method = get_method(video, opt.data_path)
             out_dir = os.path.join(opt.data_path, "boxes", method)
@@ -34,11 +48,15 @@ def process_videos(videos, detector_cls: Type[VideoFaceDetector], selected_datas
 
         if os.path.exists(out_dir) and "{}.json".format(id) in os.listdir(out_dir):
             continue
+        print(out_dir)
+        print("{}.json".format(id))
+        print('-end-')
         batches = [frames[i:i + detector._batch_size] for i in range(0, len(frames), detector._batch_size)]
       
         for j, frames in enumerate(batches):
             result.update({int(j * detector._batch_size) + i : b for i, b in zip(indices, detector._detect_faces(frames))})
         
+        print('-end2')
        
         os.makedirs(out_dir, exist_ok=True)
         print(len(result))
@@ -47,6 +65,8 @@ def process_videos(videos, detector_cls: Type[VideoFaceDetector], selected_datas
                 json.dump(result, f)
         else:
             missed_videos.append(id)
+        
+        print('-end3')
 
     if len(missed_videos) > 0:
         print("The detector did not find faces inside the following videos:")

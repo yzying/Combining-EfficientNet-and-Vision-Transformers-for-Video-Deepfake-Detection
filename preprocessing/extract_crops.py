@@ -77,7 +77,9 @@ def extract_video(video, root_dir, dataset):
                 cv2.imwrite(os.path.join(opt.output_path, id, "{}_{}.png".format(i, j)), crop)
         if counter == 0:
             print(video, counter)
-    except e:
+    except:
+        print(video)
+        raise
         print("Error:", e)
     
 
@@ -108,8 +110,8 @@ if __name__ == '__main__':
         paths = get_video_paths(opt.data_path, dataset, excluded_videos)
         #paths.extend(get_video_paths(opt.data_path, dataset, excluded_videos))
     else:
-        paths = get_video_paths(os.path.join(opt.data_path, "manipulated_sequences"), dataset)
-        paths.extend(get_video_paths(os.path.join(opt.data_path, "original_sequences"), dataset))
+        paths = get_video_paths(os.path.join(opt.data_path, "manipulated_sequences"), dataset, one_div_down=True)
+        paths.extend(get_video_paths(os.path.join(opt.data_path, "original_sequences"), dataset, one_div_down=True))
     
     with Pool(processes=cpu_count()-2) as p:
         with tqdm(total=len(paths)) as pbar:
